@@ -27,6 +27,10 @@ public class SSOServlet extends HttpServlet {
         String ydToken = req.getParameter("ydtoken");
         log.info("[exmail][sso] read token:"+ydToken);
         for(;;){
+            if(null == ydToken || ydToken.trim().length()==0){
+                errMsg = "服务没有接收到有度身份认证token";
+                break;
+            }
             try {
                 UserInfo user = ydIdentifyClient.idetify(ydToken);
                 String email = user.getEmail();
