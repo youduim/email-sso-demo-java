@@ -1,4 +1,4 @@
-package exmail.example.servlet;
+package im.youdu.demo.exmail;
 
 import im.youdu.sdk.client.IdentifyClient;
 import im.youdu.sdk.entity.UserInfo;
@@ -9,12 +9,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class SSOServlet extends HttpServlet {
     private final static Logger log = Logger.getLogger(SSOServlet.class.getName());
 
-    private String host = "127.0.0.1:7080";
-    private IdentifyClient ydIdentifyClient = new IdentifyClient(host);
+    private String host;
+    private String initErrMsg;
+    private IdentifyClient ydIdentifyClient;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -24,38 +27,60 @@ public class SSOServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String errMsg = "";
-        String ydToken = req.getParameter("ydtoken");
-        log.info("[exmail][sso] read token:"+ydToken);
         for(;;){
+            if(null == ydIdentifyClient){
+                errMsg = "有度服务信息未初始化:"+initErrMsg;
+                break;
+            }
+
+            String ydToken = req.getParameter("ydtoken");
+            log.info("读到有度token:"+ydToken);
             if(null == ydToken || ydToken.trim().length()==0){
                 errMsg = "服务没有接收到有度身份认证token";
                 break;
             }
+
             try {
                 UserInfo user = ydIdentifyClient.idetify(ydToken);
                 String email = user.getEmail();
                 if(null == email || email.length() == 0){
-                    log.warn(String.format("[exmail][sso] get user from yd ok, but found email is blank: %s",user.getUserId()));
-                    errMsg = "你的邮箱地址为空";
+                    errMsg = "读到邮箱地址为空";
                    break;
                 }
-                log.info("[exmail][sso] read email:"+email);
+                log.info("读到邮箱地址:"+email);
                 String url = this.getSSOUrlByEmail(email);
                 resp.sendRedirect(url);
                 return;
             } catch (Exception e) {
-                log.error("[exmail][sso] get user from yd exception: "+e.getMessage());
                 errMsg = "有度身份认证异常:"+e.getMessage();
-               break;
             }
+
+            break;
         }
+        log.error(errMsg);
         req.setAttribute("errMsg", errMsg);
         req.getRequestDispatcher("error.jsp").forward(req,resp);
     }
 
+    @Override
+    public void init() throws ServletException {
+        Properties prop = new Properties();
+        InputStream in = null;
+        try {
+            in = this.getClass().getResourceAsStream("/ydapp.properties");
+            prop.load(in);
+            host = prop.getProperty("host");
+            log.info("读取到有度服务地址:"+host);
+            ydIdentifyClient = new IdentifyClient(host);
+        } catch (Exception e) {
+            initErrMsg = "读取有度服务配置发生错误: "+e.getMessage();
+            log.error(initErrMsg);
+        }
+    }
+
+    //TODO 以下方法是示例伪代码，具体情况请根据您企业邮服务商的规范来获取用户的单点登录URL
     private String getSSOUrlByEmail(String email){
-        //TODO 获取用户的企业邮单点登录URL
-        log.info("[exmail][sso] get login url by email:"+email);
+        log.info("获取企业邮单点登录地址:"+email);
         return "http://youdu.im";
     }
 

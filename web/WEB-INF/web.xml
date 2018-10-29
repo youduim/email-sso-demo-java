@@ -6,7 +6,7 @@
     
     <servlet>
         <servlet-name>SSOServlet</servlet-name>
-        <servlet-class>exmail.example.servlet.SSOServlet</servlet-class>
+        <servlet-class>im.youdu.demo.exmail.SSOServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>SSOServlet</servlet-name>
