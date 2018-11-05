@@ -33,15 +33,17 @@ public class SSOServlet extends HttpServlet {
                 break;
             }
 
-            String ydToken = req.getParameter("ydtoken");
-            log.info("读到有度token:"+ydToken);
-            if(null == ydToken || ydToken.trim().length()==0){
+            String ydtoken = req.getParameter("ydtoken");
+            if(null != ydtoken){
+                ydtoken = ydtoken.trim();
+            }
+            if(null == ydtoken || ydtoken.length()==0){
                 errMsg = "服务没有接收到有度身份认证token";
                 break;
             }
-
+            log.info("读到有度token:"+ydtoken);
             try {
-                UserInfo user = ydIdentifyClient.idetify(ydToken);
+                UserInfo user = ydIdentifyClient.idetify(ydtoken);
                 String email = user.getEmail();
                 if(null == email || email.length() == 0){
                     errMsg = "读到邮箱地址为空";
