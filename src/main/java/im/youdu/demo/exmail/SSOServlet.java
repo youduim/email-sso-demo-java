@@ -36,9 +36,11 @@ public class SSOServlet extends HttpServlet {
             String ydtoken = req.getParameter("ydtoken");
             if(null != ydtoken){
                 ydtoken = ydtoken.trim();
+            }else{
+                ydtoken = "";
             }
-            if(null == ydtoken || ydtoken.length()==0){
-                errMsg = "服务没有接收到有度身份认证token";
+            if(ydtoken.length()==0){
+                errMsg = "没有接收到有度身份认证token";
                 break;
             }
             log.info("读到有度token:"+ydtoken);
@@ -80,7 +82,7 @@ public class SSOServlet extends HttpServlet {
         }
     }
 
-    //TODO 以下方法是示例伪代码，具体情况请根据您企业邮服务商的规范来获取用户的单点登录URL
+    //TODO 这里只是一段示例代码, 具体实现请参照您企业邮箱服务商的接口规范
     private String getSSOUrlByEmail(String email){
         log.info("获取企业邮单点登录地址:"+email);
         return "http://youdu.im";
