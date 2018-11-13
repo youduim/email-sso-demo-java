@@ -85,7 +85,7 @@ public class SSOServlet extends HttpServlet {
     //TODO 这里只是一段示例代码, 具体实现请参照您企业邮箱服务商的接口规范
     private String getSSOUrlByEmail(String email){
         log.info("获取企业邮单点登录地址:"+email);
-        return "http://youdu.im";
+        return "https://youdu.im";
     }
 
 }
