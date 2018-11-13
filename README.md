@@ -7,5 +7,5 @@ Intellj Idea 2017
 ```
 ### 使用说明
 ```
-请参考exmailssodemo使用说明.doc
+请参考exmailssodemo说明文档.doc
 ```
